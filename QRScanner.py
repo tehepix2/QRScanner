@@ -1,3 +1,4 @@
+print("Importing libraries...")
 import time
 import cv2
 import numpy as np
@@ -19,12 +20,15 @@ def decoder(image):
         qrData = ' '.join(raw_qrData.split())
        
         f = open("data.txt", "a")
+        print("Writing to file...")
         f.write(qrData + "\n")
         f.close()
 
         time.sleep(2)
 
+print("Activating camera...")
 cap = cv2.VideoCapture(1)
+print("Camera active")
 while True:
     ret, frame = cap.read()
     decoder(frame)
@@ -32,5 +36,5 @@ while True:
     code = cv2.waitKey(10)
     if code == ord('q'):
         break
-
+print("End of program")
 os.remove('data.txt')
