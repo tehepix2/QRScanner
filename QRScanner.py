@@ -1,9 +1,10 @@
 print("Importing libraries...")
 import time
+import os
+
 import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
-import os
 
 def decoder(image):
     gray_img = cv2.cvtColor(image,0)
