@@ -17,12 +17,17 @@ def decoder(image):
         pts = pts.reshape((-1, 1, 2))
         cv2.polylines(image, [pts], True, (0, 255, 0), 3)
 
-        raw_qrData = obj.data.decode("utf-8").strip()
-        qrData = ' '.join(raw_qrData.split())
-       
+        raw_qrData = obj.data.decode("utf-8").split()
         f = open("data.txt", "a")
         print("Writing to file...")
-        f.write(qrData + "\n")
+        for x in raw_qrData:
+            try:
+                int(x)
+                f.write(x + " ")
+            except:
+                f.write(f'"{x}"' + " ")
+        
+        f.write("\n")
         f.close()
 
         time.sleep(2)
