@@ -1,10 +1,14 @@
 print("Importing libraries...")
 import time
 import os
-
+import signal
 import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
+
+print("Opening text file...")
+A = open("data.txt", "a")
+B = os.startfile('data.txt')
 
 def decoder(image):
     gray_img = cv2.cvtColor(image,0)
@@ -28,14 +32,22 @@ def decoder(image):
                 f.write(f'"{x}"' + " ")
         
         f.write("\n")
+        os.system(f"taskkill /f /im notepad.exe")
+        os.system("notepad.exe")
         f.close()
 
-        time.sleep(2)
+        time.sleep(1)
+
+
+
+
+
 
 print("Activating camera...")
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 print("Camera active")
 while True:
+    
     ret, frame = cap.read()
     decoder(frame)
     cv2.imshow('Image', frame)
@@ -43,4 +55,6 @@ while True:
     if code == ord('q'):
         break
 print("End of program")
+os.system(f"taskkill /f /im notepad.exe")
+A.close()
 os.remove('data.txt')
