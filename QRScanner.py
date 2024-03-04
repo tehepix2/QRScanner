@@ -1,3 +1,4 @@
+
 print("Importing libraries...")
 import time
 import os
@@ -21,15 +22,15 @@ def decoder(image):
         pts = pts.reshape((-1, 1, 2))
         cv2.polylines(image, [pts], True, (0, 255, 0), 3)
 
-        raw_qrData = obj.data.decode("utf-8").split()
+        raw_qrData = obj.data.decode("utf-8")
         f = open("data.txt", "a")
         print("Writing to file...")
         for x in raw_qrData:
             try:
-                int(x)
-                f.write(x + " ")
+                f.write(x)
             except:
-                f.write(f'"{x}"' + " ")
+                print("Error")
+            
         
         f.write("\n")
         os.system(f"taskkill /f /im notepad.exe")
@@ -37,11 +38,6 @@ def decoder(image):
         f.close()
 
         time.sleep(1)
-
-
-
-
-
 
 print("Activating camera...")
 cap = cv2.VideoCapture(0)
