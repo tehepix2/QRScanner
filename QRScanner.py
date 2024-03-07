@@ -1,56 +1,52 @@
-
 print("Importing libraries...")
-import time
-import os
-import signal
 import cv2
-import numpy as np
-from pyzbar.pyzbar import decode
+from time import sleep
+import os
+
+camera_id = 0
+delay = 1
+window_name = 'Scanner'
+
+print("Starting detector...")
+qcd = cv2.QRCodeDetector()
+print("Starting Camera...")
+cap = cv2.VideoCapture(camera_id)
 
 print("Opening text file...")
 A = open("data.txt", "a")
 B = os.startfile('data.txt')
 
-def decoder(image):
-    gray_img = cv2.cvtColor(image,0)
-    qrCode = decode(gray_img)
-
-    for obj in qrCode:
-        points = obj.polygon
-        (x,y,w,h) = obj.rect
-        pts = np.array(points, np.int32)
-        pts = pts.reshape((-1, 1, 2))
-        cv2.polylines(image, [pts], True, (0, 255, 0), 3)
-
-        raw_qrData = obj.data.decode("utf-8")
-        f = open("data.txt", "a")
-        print("Writing to file...")
-        for x in raw_qrData:
-            try:
-                f.write(x)
-            except:
-                print("Error")
-            
-        
-        f.write("\n")
-        os.system(f"taskkill /f /im notepad.exe")
-        os.system("notepad.exe")
-        f.close()
-
-        time.sleep(1)
-
-print("Activating camera...")
-cap = cv2.VideoCapture(0)
-print("Camera active")
 while True:
-    
     ret, frame = cap.read()
-    decoder(frame)
-    cv2.imshow('Image', frame)
-    code = cv2.waitKey(10)
-    if code == ord('q'):
+
+    if ret:
+        ret_qr, decoded_info, points, _ = qcd.detectAndDecodeMulti(frame)
+        if ret_qr:
+            for s, p in zip(decoded_info, points):
+                if s:
+                    f = open("data.txt", "a")
+                    
+                    for obj in s:
+                        f.write(str(obj).lstrip("[").rstrip("]"))
+                    
+                    f.write("\n")
+                    os.system(f"taskkill /f /im notepad.exe")
+                    os.startfile("data.txt")
+                    f.close()
+                    color = (0, 255, 0)
+                    sleep(1)
+                else:
+                    color = (0, 0, 255)
+                frame = cv2.polylines(frame, [p.astype(int)], True, color, 8)
+        cv2.imshow(window_name, frame)
+        
+        
+
+    if cv2.waitKey(delay) & 0xFF == ord('q'):
         break
+    
 print("End of program")
 os.system(f"taskkill /f /im notepad.exe")
 A.close()
 os.remove('data.txt')
+cv2.destroyWindow(window_name)
